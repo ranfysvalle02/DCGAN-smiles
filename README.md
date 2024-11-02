@@ -53,6 +53,8 @@ By adopting these features, DCGANs achieve superior image quality and training s
 
 ---
 
+![](https://idiotdeveloper.com/wp-content/uploads/2023/08/gan-1024x354.webp)
+
 ## Transforming Our GAN to a DCGAN
 
 Transitioning from a Basic GAN to a DCGAN involved several pivotal changes. Here's a breakdown of the key modifications:
