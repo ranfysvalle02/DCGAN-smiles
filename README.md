@@ -4,7 +4,7 @@
 
 ---
 
-# Elevating GANs: Transitioning from Basic GANs to DCGANs and Navigating Resource Challenges
+# Elevating GANs: Transitioning from Basic GANs to DCGANs
 
 [In our previous exploration](https://github.com/ranfysvalle02/smiley-GAN/), we delved into the foundational aspects of **Generative Adversarial Networks (GANs)**, understanding their architecture, training dynamics, and applications. GANs have been a groundbreaking innovation in the realm of generative modeling, enabling the creation of realistic images, audio, and more. However, as with any powerful tool, scaling GANs to handle more complex tasks introduces new challenges. In this follow-up post, we embark on enhancing our basic GAN to a **Deep Convolutional GAN (DCGAN)**, examining the transformative changes and the valuable lessons learned along the way—especially concerning computational resource management.
 
