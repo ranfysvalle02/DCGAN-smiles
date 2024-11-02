@@ -20,7 +20,7 @@
 
 ---
 
-## Recap: The Basic GAN
+## [Recap: The Basic GAN](https://github.com/ranfysvalle02/smiley-GAN/)
 
 In our initial venture, we implemented a **Basic GAN** capable of generating simple smiley face images. This GAN comprised:
 
