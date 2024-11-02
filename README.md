@@ -31,6 +31,8 @@ While effective for generating rudimentary images, the Basic GAN had limitations
 
 ---
 
+![](https://miro.medium.com/v2/resize:fit:1400/1*cCa0FX-yXOPJ86bUkwCEAA.png)
+
 ## Introducing DCGANs
 
 **Deep Convolutional GANs (DCGANs)**, introduced by Radford, Metz, and Chintala in their seminal [2015 paper](https://arxiv.org/abs/1511.06434), revolutionized GAN architectures by integrating deep convolutional neural networks (CNNs). DCGANs leverage the hierarchical feature extraction capabilities of CNNs, enabling the generation of more detailed and realistic images.
