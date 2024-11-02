@@ -1,5 +1,7 @@
 # DCGAN-smiles
 
+![](dcgan.png)
+
 ---
 
 # Elevating GANs: Transitioning from Basic GANs to DCGANs and Navigating Resource Challenges
