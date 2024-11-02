@@ -93,44 +93,89 @@ Transitioning from a Basic GAN to a DCGAN involved several pivotal changes. Here
 
 ### Updated DCGAN Code Snippet
 
-Here's a glimpse of the key changes in the DCGAN implementation:
-
 ```python
 class Generator(nn.Module):
+    """
+    DCGAN Generator
+    Transforms a random noise vector into a structured image using transposed convolutions.
+    """
     def __init__(self, latent_dim: int, img_channels: int = 3, feature_map_size: int = 64):
         super(Generator, self).__init__()
         self.net = nn.Sequential(
+            # Input: (latent_dim) x 1 x 1
             nn.ConvTranspose2d(latent_dim, feature_map_size * 8, kernel_size=4, stride=1, padding=0, bias=False),
             nn.BatchNorm2d(feature_map_size * 8),
             nn.ReLU(True),
-            # Additional ConvTranspose2d layers...
+            # State: (feature_map_size*8) x 4 x 4
+
+            nn.ConvTranspose2d(feature_map_size * 8, feature_map_size * 4, kernel_size=4, stride=2, padding=1, bias=False),
+            nn.BatchNorm2d(feature_map_size * 4),
+            nn.ReLU(True),
+            # State: (feature_map_size*4) x 8 x 8
+
+            nn.ConvTranspose2d(feature_map_size * 4, feature_map_size * 2, kernel_size=4, stride=2, padding=1, bias=False),
+            nn.BatchNorm2d(feature_map_size * 2),
+            nn.ReLU(True),
+            # State: (feature_map_size*2) x 16 x 16
+
+            nn.ConvTranspose2d(feature_map_size * 2, feature_map_size, kernel_size=4, stride=2, padding=1, bias=False),
+            nn.BatchNorm2d(feature_map_size),
+            nn.ReLU(True),
+            # State: (feature_map_size) x 32 x 32
+
             nn.ConvTranspose2d(feature_map_size, img_channels, kernel_size=4, stride=2, padding=1, bias=False),
             nn.Tanh()
+            # Output: (img_channels) x 64 x 64
         )
-    
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.net(x)
 
+# =========================================
+# DCGAN Discriminator Definition
+# =========================================
+
 class Discriminator(nn.Module):
+    """
+    DCGAN Discriminator
+    Evaluates whether an image is real or fake using deep convolutional layers.
+    """
     def __init__(self, img_channels: int = 3, feature_map_size: int = 64):
         super(Discriminator, self).__init__()
         self.net = nn.Sequential(
+            # Input: (img_channels) x 64 x 64
             nn.Conv2d(img_channels, feature_map_size, kernel_size=4, stride=2, padding=1, bias=False),
             nn.LeakyReLU(0.2, inplace=True),
-            # Additional Conv2d layers...
+            # State: (feature_map_size) x 32 x 32
+
+            nn.Conv2d(feature_map_size, feature_map_size * 2, kernel_size=4, stride=2, padding=1, bias=False),
+            nn.BatchNorm2d(feature_map_size * 2),
+            nn.LeakyReLU(0.2, inplace=True),
+            # State: (feature_map_size*2) x 16 x 16
+
+            nn.Conv2d(feature_map_size * 2, feature_map_size * 4, kernel_size=4, stride=2, padding=1, bias=False),
+            nn.BatchNorm2d(feature_map_size * 4),
+            nn.LeakyReLU(0.2, inplace=True),
+            # State: (feature_map_size*4) x 8 x 8
+
+            nn.Conv2d(feature_map_size * 4, feature_map_size * 8, kernel_size=4, stride=2, padding=1, bias=False),
+            nn.BatchNorm2d(feature_map_size * 8),
+            nn.LeakyReLU(0.2, inplace=True),
+            # State: (feature_map_size*8) x 4 x 4
+
             nn.Conv2d(feature_map_size * 8, 1, kernel_size=4, stride=1, padding=0, bias=False),
             nn.Sigmoid()
+            # Output: 1 x 1 x 1
         )
-    
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.net(x).view(-1, 1).squeeze(1)
+
 ```
 
 ---
 
 ## Challenges Encountered: Resource Intensity
-
-While upgrading to a DCGAN brought substantial improvements in image quality, it introduced significant **computational challenges**:
 
 ### 1. **Increased Computational Load**
 
@@ -152,13 +197,9 @@ While upgrading to a DCGAN brought substantial improvements in image quality, it
 - **Longer Epochs**: Each training epoch took significantly more time, prolonging the overall training duration.
 - **Monitoring and Debugging**: Increased computational steps made monitoring training progress more resource-intensive and time-consuming.
 
-**Personal Experience:** During DCGAN training, I observed my laptop's fans spinning at higher speeds and the system becoming noticeably warmer. Additionally, the training process was markedly slower compared to the Basic GAN, underscoring the heightened resource requirements.
-
 ---
 
 ## Optimizing DCGAN Performance
-
-To mitigate the resource challenges posed by the DCGAN, it's essential to adopt optimization strategies that enhance efficiency without compromising the model's performance and output quality. Here's an overview of general optimization techniques applicable to DCGANs:
 
 ### 1. **Leveraging GPU Acceleration**
 
@@ -220,8 +261,6 @@ To mitigate the resource challenges posed by the DCGAN, it's essential to adopt 
 
 ## Key Learnings and Best Practices
 
-Through this transformation and optimization journey, several key insights emerged:
-
 1. **Architectural Choices Matter:** Transitioning to convolutional layers significantly enhances image quality but demands more computational power. Balancing depth and complexity with available resources is crucial.
 
 2. **Hardware Utilization:** Maximizing GPU capabilities through proper configuration (e.g., ensuring models and data are on GPU) can drastically reduce training times and handle larger models efficiently.
@@ -243,9 +282,5 @@ Through this transformation and optimization journey, several key insights emerg
 ## Conclusion
 
 Transitioning from a Basic GAN to a DCGAN marked a significant leap in both the quality of generated images and the complexity of the training process. While DCGANs offer superior capabilities in capturing detailed spatial features and producing realistic outputs, they also introduce challenges related to computational resource demands. Through strategic optimizations—such as leveraging GPU acceleration, adjusting model complexity, implementing mixed precision training, and enhancing data loading—we can harness the full potential of DCGANs without overburdening our hardware.
-
-This journey underscores the delicate balance between model sophistication and resource management, a balance that is pivotal in the practical deployment of deep learning models. As we continue to explore and innovate within the realm of generative models, these insights will guide us in building more efficient, effective, and scalable solutions.
-
-Whether you're enhancing existing models or embarking on new generative projects, understanding and applying these optimizations will empower you to create high-quality outputs while maintaining optimal performance. Happy modeling!
 
 ---
