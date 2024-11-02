@@ -361,39 +361,8 @@ Traditional neural networks often use **pooling layers** to reduce image size. H
   - **Mid-Level:** Recognizing the shape of the eyes, nose, and mouth.
   - **High-Level:** Combining all these parts to form a complete, realistic cat face.
 
-### 5. The Trade-Off Between Image Size and Computational Load
 
-When moving from simpler GANs to DCGANs, one major change is increasing the image size (e.g., from 28x28 pixels to 64x64 pixels). This brings both benefits and challenges.
-
-#### a. Why Increase Image Size?
-
-- **More Detail:** Bigger images can show finer details, making them look more realistic.
-  
-- **Better Learning:** Higher resolution helps the network learn and generate more complex patterns and textures.
-
-- **Simple Example:** A small 28x28 smiley face is cute but lacks detail. A larger 64x64 smiley face can show facial expressions, accessories like glasses, and more nuanced features.
-
-#### b. Increased Computational Load
-
-- **More Data to Process:** Larger images require more calculations, making the network slower to train.
-  
-- **More Memory Needed:** Bigger images take up more space in the computer's memory, which can limit how many images you can process at once.
-  
-- **Longer Training Times:** Training with larger images can take significantly more time.
-
-- **Simple Analogy:** Think of printing a small photo versus a large poster. The large poster takes more ink and paper and takes longer to print, just like larger images require more computational resources.
-
-#### c. Balancing Quality and Resources
-
-- **Efficient Design:** Create a network that uses resources wisely to handle larger images without becoming too slow or memory-heavy.
-  
-- **Use Better Hardware:** Powerful computers with more memory and faster processors can manage larger images more effectively.
-  
-- **Training Techniques:** Methods like reducing the number of images processed at once (batch size) or using smarter ways to train can help manage the extra load.
-
-- **Simple Tip:** Start by training on smaller images to understand how the network behaves, then gradually increase the size as you optimize and ensure your computer can handle the load.
-
-### 6. Additional Insights
+### 5. Additional Insights
 
 #### a. The Role of Batch Normalization
 
