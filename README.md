@@ -345,6 +345,8 @@ Traditional neural networks often use **pooling layers** to reduce image size. H
   
 - **Simple Example:** Imagine having 64 colored glasses, each designed to highlight different aspects of a scene—one makes red things stand out, another highlights blue areas, another emphasizes edges, and so on. When you look through all these glasses, you get 64 different views of the same scene, each highlighting different features.
 
+![](https://csdl-images.ieeecomputer.org/trans/ta/2022/01/figures/kim3-2946540.gif)
+
 #### b. What are Features?
 
 - **Features:** These are the specific patterns or details that feature maps detect within an image.
