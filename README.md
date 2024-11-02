@@ -4,7 +4,7 @@
 
 ---
 
-# Elevating GANs: Transitioning from Basic GANs to DCGANs
+# Elevating GANs: From Basic GANs to DCGANs
 
 In our [previous post](https://github.com/ranfysvalle02/smiley-GAN/), we introduced the basics of **Generative Adversarial Networks (GANs)** by creating a simple model that generated basic smiley faces. This initial exploration provided a solid foundation, but to achieve more realistic and detailed images, we needed to enhance our approach. Enter the **Deep Convolutional GAN (DCGAN)**—a more sophisticated architecture that leverages the power of convolutional neural networks to produce higher quality images.
 
