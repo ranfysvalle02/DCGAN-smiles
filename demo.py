@@ -16,7 +16,7 @@ BATCH_SIZE = 64
 LATENT_DIM = 100
 EPOCHS = 300
 LEARNING_RATE = 0.0002
-IMG_SIZE = 64  # Increased image size for better quality
+IMG_SIZE = 32  
 NUM_SAMPLES = 2000
 NUM_REAL_DISPLAY = 5
 NUM_GENERATED_DISPLAY = 5
@@ -59,7 +59,7 @@ def add_mouth(image: np.ndarray, x: np.ndarray, y: np.ndarray, center: Tuple[int
 
 def add_optional_features(image: np.ndarray, x: np.ndarray, y: np.ndarray, feature: str) -> None:
     if feature == 'glasses':
-        glass_radius = 3
+        glass_radius = 2  # Reduced radius for smaller images
         left_glass_center = (IMG_SIZE // 2 - IMG_SIZE // 8, IMG_SIZE // 3)
         right_glass_center = (IMG_SIZE // 2 + IMG_SIZE // 8, IMG_SIZE // 3)
         bridge_y = IMG_SIZE // 3
@@ -76,8 +76,8 @@ def add_optional_features(image: np.ndarray, x: np.ndarray, y: np.ndarray, featu
         image[:, bridge_mask] = 0.0
 
     elif feature == 'hat':
-        hat_height = IMG_SIZE // 8
-        hat_width = IMG_SIZE // 3
+        hat_height = IMG_SIZE // 16  # Adjusted for smaller images
+        hat_width = IMG_SIZE // 2
         hat_x_start = IMG_SIZE // 2 - hat_width // 2
         hat_x_end = IMG_SIZE // 2 + hat_width // 2
         hat_y_start = IMG_SIZE // 4 - hat_height
@@ -98,14 +98,14 @@ def generate_smiley_faces_dataset(num_samples: int = NUM_SAMPLES, img_size: int 
         face_color = create_face_color()
         y_grid, x_grid = np.ogrid[:img_size, :img_size]
         center = (img_size // 2, img_size // 2)
-        radius = img_size // 2 - 5
+        radius = img_size // 2 - 3  # Adjusted for smaller images
         mask = (x_grid - center[0])**2 + (y_grid - center[1])**2 <= radius**2
         image[0, mask] = face_color[0]
         image[1, mask] = face_color[1]
         image[2, mask] = face_color[2]
 
-        eye_radius = 3
-        eye_y = center[1] - img_size // 6
+        eye_radius = 1  # Reduced for smaller images
+        eye_y = center[1] - img_size // 8
         eye_x_left = center[0] - img_size // 4
         eye_x_right = center[0] + img_size // 4
 
@@ -117,7 +117,7 @@ def generate_smiley_faces_dataset(num_samples: int = NUM_SAMPLES, img_size: int 
             add_optional_features(image, x_grid, y_grid, 'hat')
 
         mouth_width = img_size // 2
-        mouth_height = img_size // 10
+        mouth_height = img_size // 16  # Adjusted for smaller images
         add_mouth(image, x_grid, y_grid, center, mouth_width, mouth_height)
 
         # Normalize to [-1, 1]
@@ -151,29 +151,24 @@ class Generator(nn.Module):
         super(Generator, self).__init__()
         self.net = nn.Sequential(
             # Input: (latent_dim) x 1 x 1
-            nn.ConvTranspose2d(latent_dim, feature_map_size * 8, kernel_size=4, stride=1, padding=0, bias=False),
-            nn.BatchNorm2d(feature_map_size * 8),
-            nn.ReLU(True),
-            # State: (feature_map_size*8) x 4 x 4
-
-            nn.ConvTranspose2d(feature_map_size * 8, feature_map_size * 4, kernel_size=4, stride=2, padding=1, bias=False),
+            nn.ConvTranspose2d(latent_dim, feature_map_size * 4, kernel_size=4, stride=1, padding=0, bias=False),
             nn.BatchNorm2d(feature_map_size * 4),
             nn.ReLU(True),
-            # State: (feature_map_size*4) x 8 x 8
+            # State: (feature_map_size*4) x 4 x 4
 
             nn.ConvTranspose2d(feature_map_size * 4, feature_map_size * 2, kernel_size=4, stride=2, padding=1, bias=False),
             nn.BatchNorm2d(feature_map_size * 2),
             nn.ReLU(True),
-            # State: (feature_map_size*2) x 16 x 16
+            # State: (feature_map_size*2) x 8 x 8
 
             nn.ConvTranspose2d(feature_map_size * 2, feature_map_size, kernel_size=4, stride=2, padding=1, bias=False),
             nn.BatchNorm2d(feature_map_size),
             nn.ReLU(True),
-            # State: (feature_map_size) x 32 x 32
+            # State: (feature_map_size) x 16 x 16
 
             nn.ConvTranspose2d(feature_map_size, img_channels, kernel_size=4, stride=2, padding=1, bias=False),
             nn.Tanh()
-            # Output: (img_channels) x 64 x 64
+            # Output: (img_channels) x 32 x 32
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -191,27 +186,22 @@ class Discriminator(nn.Module):
     def __init__(self, img_channels: int = 3, feature_map_size: int = 64):
         super(Discriminator, self).__init__()
         self.net = nn.Sequential(
-            # Input: (img_channels) x 64 x 64
+            # Input: (img_channels) x 32 x 32
             nn.Conv2d(img_channels, feature_map_size, kernel_size=4, stride=2, padding=1, bias=False),
             nn.LeakyReLU(0.2, inplace=True),
-            # State: (feature_map_size) x 32 x 32
+            # State: (feature_map_size) x 16 x 16
 
             nn.Conv2d(feature_map_size, feature_map_size * 2, kernel_size=4, stride=2, padding=1, bias=False),
             nn.BatchNorm2d(feature_map_size * 2),
             nn.LeakyReLU(0.2, inplace=True),
-            # State: (feature_map_size*2) x 16 x 16
+            # State: (feature_map_size*2) x 8 x 8
 
             nn.Conv2d(feature_map_size * 2, feature_map_size * 4, kernel_size=4, stride=2, padding=1, bias=False),
             nn.BatchNorm2d(feature_map_size * 4),
             nn.LeakyReLU(0.2, inplace=True),
-            # State: (feature_map_size*4) x 8 x 8
+            # State: (feature_map_size*4) x 4 x 4
 
-            nn.Conv2d(feature_map_size * 4, feature_map_size * 8, kernel_size=4, stride=2, padding=1, bias=False),
-            nn.BatchNorm2d(feature_map_size * 8),
-            nn.LeakyReLU(0.2, inplace=True),
-            # State: (feature_map_size*8) x 4 x 4
-
-            nn.Conv2d(feature_map_size * 8, 1, kernel_size=4, stride=1, padding=0, bias=False),
+            nn.Conv2d(feature_map_size * 4, 1, kernel_size=4, stride=1, padding=0, bias=False),
             nn.Sigmoid()
             # Output: 1 x 1 x 1
         )
@@ -434,10 +424,10 @@ def explain_dcgan_results():
 # =========================================
 
 if __name__ == "__main__":
-    # Ensure the image size is compatible with DCGAN architecture (must be 64x64)
-    if IMG_SIZE != 64:
-        print(f"Adjusting IMG_SIZE from {IMG_SIZE} to 64 for DCGAN compatibility.")
-        IMG_SIZE = 64
+    # Ensure the image size is compatible with DCGAN architecture (must be 32x32)
+    if IMG_SIZE != 32:
+        print(f"Adjusting IMG_SIZE from {IMG_SIZE} to 32 for DCGAN compatibility.")
+        IMG_SIZE = 32
         # Regenerate the dataset with the new image size
         data, real_images = generate_smiley_faces_dataset(img_size=IMG_SIZE)
         dataset = TensorDataset(data)
