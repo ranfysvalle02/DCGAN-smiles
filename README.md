@@ -27,6 +27,8 @@ In our initial venture, we implemented a **Basic GAN** capable of generating sim
 - **Generator**: A neural network using fully connected (linear) layers to transform a latent vector (random noise) into image data.
 - **Discriminator**: A neural network also utilizing fully connected layers to differentiate between real and generated images.
 
+![](gen.png)
+
 While effective for generating rudimentary images, the Basic GAN had limitations in capturing intricate spatial features and producing high-fidelity outputs.
 
 ---
